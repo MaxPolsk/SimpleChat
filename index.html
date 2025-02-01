@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с помощником</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .chat-container {
+            width: 350px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-window {
+            padding: 10px;
+            height: 400px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .user-message {
+            text-align: right;
+            color: #34c759;
+        }
+        .bot-message {
+            text-align: left;
+            color: #333;
+        }
+        .input-group {
+            display: flex;
+            padding: 10px;
+        }
+        .input-group input {
+            flex: 1;
+            height: 40px;
+            font-size: 16px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-group button {
+            height: 40px;
+            width: 80px;
+            margin-left: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #34c759;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .input-group button:hover {
+            background-color: #2da94f;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Окно чата -->
+        <div class="chat-window" id="chatWindow"></div>
+
+        <!-- Поле ввода -->
+        <div class="input-group">
+            <input type="text" id="userInput" placeholder="Введите сообщение..." />
+            <button onclick="sendMessage()">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        // Функция для отправки сообщения
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value.trim();
+            if (!userInput) return;
+
+            // Добавляем сообщение пользователя в чат
+            addMessage(userInput, 'user');
+
+            // Генерируем ответ
+            const botResponse = generateResponse(userInput);
+
+            // Добавляем ответ бота в чат
+            setTimeout(() => addMessage(botResponse, 'bot'), 500);
+
+            // Очищаем поле ввода
+            document.getElementById('userInput').value = '';
+        }
+
+        // Функция для добавления сообщений в окно чата
+        function addMessage(message, sender) {
+            const chatWindow = document.getElementById('chatWindow');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            messageElement.textContent = message;
+            chatWindow.appendChild(messageElement);
+
+            // Прокручиваем окно чата вниз
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Функция для генерации ответа бота
+        function generateResponse(input) {
+            input = input.toLowerCase();
+
+            if (input.includes('привет') || input.includes('здравствуй')) {
+                return 'Привет! 😊 Как я могу помочь?';
+            } else if (input.includes('пока')) {
+                return 'До встречи! Удачи! 🚀';
+            } else if (input.includes('спасибо')) {
+                return 'Пожалуйста! Всегда рад помочь! ❤️';
+            } else if (input.includes('как дела')) {
+                return 'Спасибо, у меня всё отлично! А у тебя как?';
+            } else if (input.includes('помощь')) {
+                return 'Конечно! Задавай любой вопрос, и я постараюсь помочь.';
+            } else {
+                return 'Я не совсем понял ваш запрос. Можете уточнить?';
+            }
+        }
+
+        // Отправка сообщения по нажатию Enter
+        document.getElementById('userInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
