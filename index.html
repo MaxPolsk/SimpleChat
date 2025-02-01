@@ -32,7 +32,7 @@
         .input-group label {
             margin-right: 10px;
         }
-        .input-group input {
+        .input-group input, .input-group select {
             width: 150px;
             height: 30px;
             font-size: 16px;
@@ -71,12 +71,25 @@
                 <option value="sphere">Сфера</option>
                 <option value="cylinder">Цилиндр</option>
                 <option value="cone">Конус</option>
+                <option value="parallelepiped">Параллелепипед</option>
+                <option value="pyramid">Пирамида</option>
+                <option value="torus">Тор</option>
             </select>
         </div>
 
         <!-- Поля для ввода параметров -->
         <div class="input-group" id="parameters">
             <!-- Параметры будут динамически обновляться -->
+        </div>
+
+        <!-- Единицы измерения -->
+        <div class="input-group">
+            <label for="units">Единицы измерения:</label>
+            <select id="units">
+                <option value="m">Метры (м)</option>
+                <option value="cm">Сантиметры (см)</option>
+                <option value="mm">Миллиметры (мм)</option>
+            </select>
         </div>
 
         <!-- Кнопка вычисления -->
@@ -119,25 +132,51 @@
                     <label for="h">Высота (h):</label>
                     <input type="number" id="h" placeholder="Введите h">
                 `;
+            } else if (shape === 'parallelepiped') {
+                parametersDiv.innerHTML = `
+                    <label for="a">Длина (a):</label>
+                    <input type="number" id="a" placeholder="Введите a">
+                    <label for="b">Ширина (b):</label>
+                    <input type="number" id="b" placeholder="Введите b">
+                    <label for="c">Высота (c):</label>
+                    <input type="number" id="c" placeholder="Введите c">
+                `;
+            } else if (shape === 'pyramid') {
+                parametersDiv.innerHTML = `
+                    <label for="a">Длина основания (a):</label>
+                    <input type="number" id="a" placeholder="Введите a">
+                    <label for="b">Ширина основания (b):</label>
+                    <input type="number" id="b" placeholder="Введите b">
+                    <label for="h">Высота (h):</label>
+                    <input type="number" id="h" placeholder="Введите h">
+                `;
+            } else if (shape === 'torus') {
+                parametersDiv.innerHTML = `
+                    <label for="R">Большой радиус (R):</label>
+                    <input type="number" id="R" placeholder="Введите R">
+                    <label for="r">Малый радиус (r):</label>
+                    <input type="number" id="r" placeholder="Введите r">
+                `;
             }
         }
 
         // Вычисление площади
         function calculate() {
             const shape = document.getElementById('shape').value;
+            const units = document.getElementById('units').value;
 
             let result = '';
             if (shape === 'cube') {
                 const a = parseFloat(document.getElementById('a').value);
                 if (!isNaN(a)) {
-                    result = `Площадь куба: ${6 * a ** 2}`;
+                    result = `Площадь куба: ${(6 * a ** 2).toFixed(2)} ${units}²`;
                 } else {
                     result = 'Введите корректное значение!';
                 }
             } else if (shape === 'sphere') {
                 const r = parseFloat(document.getElementById('r').value);
                 if (!isNaN(r)) {
-                    result = `Площадь сферы: ${(4 * Math.PI * r ** 2).toFixed(2)}`;
+                    result = `Площадь сферы: ${(4 * Math.PI * r ** 2).toFixed(2)} ${units}²`;
                 } else {
                     result = 'Введите корректное значение!';
                 }
@@ -145,7 +184,7 @@
                 const r = parseFloat(document.getElementById('r').value);
                 const h = parseFloat(document.getElementById('h').value);
                 if (!isNaN(r) && !isNaN(h)) {
-                    result = `Площадь цилиндра: ${(2 * Math.PI * r * (h + r)).toFixed(2)}`;
+                    result = `Площадь цилиндра: ${(2 * Math.PI * r * (h + r)).toFixed(2)} ${units}²`;
                 } else {
                     result = 'Введите корректные значения!';
                 }
@@ -154,7 +193,36 @@
                 const h = parseFloat(document.getElementById('h').value);
                 if (!isNaN(r) && !isNaN(h)) {
                     const l = Math.sqrt(r ** 2 + h ** 2); // Длина образующей
-                    result = `Площадь конуса: ${(Math.PI * r * (r + l)).toFixed(2)}`;
+                    result = `Площадь конуса: ${(Math.PI * r * (r + l)).toFixed(2)} ${units}²`;
+                } else {
+                    result = 'Введите корректные значения!';
+                }
+            } else if (shape === 'parallelepiped') {
+                const a = parseFloat(document.getElementById('a').value);
+                const b = parseFloat(document.getElementById('b').value);
+                const c = parseFloat(document.getElementById('c').value);
+                if (!isNaN(a) && !isNaN(b) && !isNaN(c)) {
+                    result = `Площадь параллелепипеда: ${(2 * (a * b + b * c + a * c)).toFixed(2)} ${units}²`;
+                } else {
+                    result = 'Введите корректные значения!';
+                }
+            } else if (shape === 'pyramid') {
+                const a = parseFloat(document.getElementById('a').value);
+                const b = parseFloat(document.getElementById('b').value);
+                const h = parseFloat(document.getElementById('h').value);
+                if (!isNaN(a) && !isNaN(b) && !isNaN(h)) {
+                    const slantHeight = Math.sqrt((a / 2) ** 2 + h ** 2);
+                    const lateralArea = a * slantHeight + b * slantHeight;
+                    const baseArea = a * b;
+                    result = `Площадь пирамиды: ${(lateralArea + baseArea).toFixed(2)} ${units}²`;
+                } else {
+                    result = 'Введите корректные значения!';
+                }
+            } else if (shape === 'torus') {
+                const R = parseFloat(document.getElementById('R').value);
+                const r = parseFloat(document.getElementById('r').value);
+                if (!isNaN(R) && !isNaN(r)) {
+                    result = `Площадь тора: ${(4 * Math.PI ** 2 * R * r).toFixed(2)} ${units}²`;
                 } else {
                     result = 'Введите корректные значения!';
                 }
